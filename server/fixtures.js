@@ -35,7 +35,8 @@ var Firebase = Meteor.npmRequire('firebase');
 
 var ref = new Firebase('https://hacker-news.firebaseio.com/v0');
 var topStoriesRef = ref.child('topstories');
-var item = ref.child('item');
+var itemRef = ref.child('item');
+var updateRef = ref.child('update');
 
 var topStoriesId;
 // function storeTopStories(snapshot) {
@@ -43,18 +44,19 @@ var topStoriesId;
 //   TopStories.insert(snapshot.val());
 // };
 
-
+/* Initial Data from Firebase */
 if (TopStories.find().count() === 0) {
   topStoriesRef.once('value', Meteor.bindEnvironment(function (snapshot) {
-    console.log(snapshot.val());
+    // console.log(snapshot.val());
     topStoriesId = TopStories.insert({
       data: snapshot.val()
     });
   }));
 }
 
+/* Keep refreshing data from Firebase server */
 topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
-  console.log(snapshot.val());
+  // console.log(snapshot.val());
   topStoriesId = TopStories.findOne()._id;
 
   TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
@@ -63,3 +65,6 @@ topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
   });
 }));
 
+// itemRef.child('8863').once('value', function (snapshot) {
+//   console.log(snapshot.val());
+// });
