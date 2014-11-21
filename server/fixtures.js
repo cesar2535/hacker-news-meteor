@@ -33,5 +33,33 @@
 
 var Firebase = Meteor.npmRequire('firebase');
 
-// var ref = new Firebase('https://hacker-news.firebaseio.com/v0');
-// var topStoriesRef = ref.child('topstories');
+var ref = new Firebase('https://hacker-news.firebaseio.com/v0');
+var topStoriesRef = ref.child('topstories');
+var item = ref.child('item');
+
+var topStoriesId;
+// function storeTopStories(snapshot) {
+//   console.log(snapshot.val());
+//   TopStories.insert(snapshot.val());
+// };
+
+
+if (TopStories.find().count() === 0) {
+  topStoriesRef.once('value', Meteor.bindEnvironment(function (snapshot) {
+    console.log(snapshot.val());
+    topStoriesId = TopStories.insert({
+      data: snapshot.val()
+    });
+  }));
+}
+
+topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
+  console.log(snapshot.val());
+  topStoriesId = TopStories.findOne()._id;
+
+  TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
+    if (error)
+      console.log(error);
+  });
+}));
+
