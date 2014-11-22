@@ -44,27 +44,33 @@ var topStoriesId;
 //   TopStories.insert(snapshot.val());
 // };
 
-/* Initial Data from Firebase */
-if (TopStories.find().count() === 0) {
-  topStoriesRef.once('value', Meteor.bindEnvironment(function (snapshot) {
-    // console.log(snapshot.val());
+topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
+  // console.log(snapshot.val());
+  if (TopStories.find().count() === 0) {
+    /* Initial Data from Firebase */
     topStoriesId = TopStories.insert({
       data: snapshot.val()
     });
-  }));
-}
-
-/* Keep refreshing data from Firebase server */
-topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
-  // console.log(snapshot.val());
-  topStoriesId = TopStories.findOne()._id;
-
-  TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
-    if (error)
-      console.log(error);
-  });
+  } else {
+    /* Keep refreshing data from Firebase server */
+    topStoriesId = TopStories.findOne()._id;
+    console.log(topStoriesId);
+    TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
+      if (error)
+        console.log(error);
+      refreshPosts(snapshot.val());
+    });
+  }
 }));
 
+function refreshPosts(dataArray) {
+  Posts.remove({});
+  for (var index = 0, length = 100; index < length; index++) {
+    itemRef.child(dataArray[index]).once('value', Meteor.bindEnvironment(function (snapshot) {
+      Posts.insert(snapshot.val());
+    }));
+  }
+}
 // itemRef.child('8863').once('value', function (snapshot) {
 //   console.log(snapshot.val());
 // });
