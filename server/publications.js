@@ -3,7 +3,7 @@ Meteor.publish('posts', function (options) {
   var firstRun = true;
   topStoriesRef.on('value', Meteor.bindEnvironment(function (topSnapshot) {
     var dataArray = topSnapshot.val();
-    console.log(firstRun);
+    // console.log(firstRun);
     if (firstRun) {
       for (var index = 0, length = dataArray.length; index < length; index++) {
         (function (index) {
