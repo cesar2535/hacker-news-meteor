@@ -1,7 +1,7 @@
 /*  Hacker News API with Firebase
   Github: https://github.com/HackerNews/API
 
-  100 Stroies
+  100 Stories
   TopStories = [ 8414149, 8414078, 8413972, 8411638, 8414102, 8413204, 8413100, 8413971, 8412744, 8414003, 8412841, 8412802, 8412605, 8413548, 8413123, 8414437, 8412897, 8413028, 8413341, 8412425, 8411762, 8413623, 8412346, 8411356, 8413056, 8413365, 8412372, 8414055, 8412877, 8412167, 8413264, 8414137, 8410519, 8412933, 8411846, 8412929, 8411254, 8411512, 8412777, 8412626, 8413274, 8414389, 8414117, 8412114, 8412212, 8412759, 8412696, 8412768, 8411643, 8411866, 8413966, 8410976, 8410545, 8410358, 8413979, 8414129, 8411791, 8409075, 8410314, 8411532, 8411553, 8412099, 8412085, 8410356, 8409084, 8412862, 8409823, 8412705, 8410220, 8409323, 8414090, 8410326, 8414206, 8411026, 8408298, 8407364, 8413066, 8412104, 8412235, 8412786, 8395689, 8414318, 8406384, 8414314, 8406507, 8408501, 8413630, 8414180, 8400778, 8413804, 8407298, 8413233, 8412601, 8411277, 8409940, 8414287, 8397750, 8412679, 8412727, 8413104 ]
 
   Ranking Algorithms: (score - 1) / (now - time + 2)^1.5
@@ -38,7 +38,7 @@ var Firebase = Meteor.npmRequire('firebase');
 var ref = new Firebase('https://hacker-news.firebaseio.com/v0');
 var topStoriesRef = ref.child('topstories');
 var itemRef = ref.child('item');
-var updateRef = ref.child('update');
+var updatesRef = ref.child('updates');
 
 var topStoriesId;
 // function storeTopStories(snapshot) {
@@ -53,6 +53,7 @@ topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
     topStoriesId = TopStories.insert({
       data: snapshot.val()
     });
+    refreshPosts(snapshot.val());
   } else {
     /* Keep refreshing data from Firebase server */
     topStoriesId = TopStories.findOne()._id;
@@ -65,11 +66,25 @@ topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
   }
 }));
 
+updatesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
+  var dataArray = snapshot.val().items;
+  console.log(snapshot.val().items);
+  // refreshPosts(dataArray);
+}));
+
 function refreshPosts(dataArray) {
-  Posts.remove({});
-  for (var index = 0, length = 100; index < length; index++) {
+  // Posts.remove({});
+  for (var index = 0, length = dataArray.length; index < length; index++) {
     itemRef.child(dataArray[index]).once('value', Meteor.bindEnvironment(function (snapshot) {
-      Posts.insert(snapshot.val());
+      // Posts.insert(snapshot.val());
+      var now = new Date().getTime() / 1000;
+      var createdTime = snapshot.val().time;
+      var ageInHours = (now - createdTime) / 3600;
+      var algorithm = (snapshot.val().score - 1) / Math.pow(ageInHours + 2, 1.5);
+      var story = _.extend(snapshot.val(), {
+        rank: algorithm
+      });
+      Stories.upsert({id: snapshot.val().id}, story);
     }));
   }
 }
