@@ -8,5 +8,5 @@ template(name='postItem')
       p
         | #{score} points,
         | submitted by #{by},
-        | #{commentsCount} comments
+        a(href="https://news.ycombinator.com/item?id={{id}}", target='_blank') #{commentsCount} comments
     //- a.discuss.btn.btn-default(href="") Discuss
