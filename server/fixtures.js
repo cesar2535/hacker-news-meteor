@@ -33,61 +33,48 @@
   };
 */
 
-var Firebase = Meteor.npmRequire('firebase');
+Firebase = Meteor.npmRequire('firebase');
 
-var ref = new Firebase('https://hacker-news.firebaseio.com/v0');
-var topStoriesRef = ref.child('topstories');
-var itemRef = ref.child('item');
-var updatesRef = ref.child('updates');
+ref = new Firebase('https://hacker-news.firebaseio.com/v0');
+topStoriesRef = ref.child('topstories');
+itemRef = ref.child('item');
+updatesRef = ref.child('updates');
 
-var topStoriesId;
-// function storeTopStories(snapshot) {
-//   console.log(snapshot.val());
-//   TopStories.insert(snapshot.val());
-// };
+// var topStoriesId;
 
-topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
-  // console.log(snapshot.val());
-  if (TopStories.find().count() === 0) {
-    /* Initial Data from Firebase */
-    topStoriesId = TopStories.insert({
-      data: snapshot.val()
-    });
-    refreshPosts(snapshot.val());
-  } else {
-    /* Keep refreshing data from Firebase server */
-    topStoriesId = TopStories.findOne()._id;
-    console.log(topStoriesId);
-    TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
-      if (error)
-        console.log(error);
-      refreshPosts(snapshot.val());
-    });
-  }
-}));
+// topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
+//   // console.log(snapshot.val());
+//   if (TopStories.find().count() === 0) {
+//     /* Initial Data from Firebase */
+//     topStoriesId = TopStories.insert({
+//       data: snapshot.val()
+//     });
+//     refreshPosts(snapshot.val());
+//   } else {
+//     /* Keep refreshing data from Firebase server */
+//     topStoriesId = TopStories.findOne()._id;
+//     console.log(topStoriesId);
+//     TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
+//       if (error)
+//         console.log(error);
+//       refreshPosts(snapshot.val());
+//     });
+//   }
+// }));
 
-updatesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
-  var dataArray = snapshot.val().items;
-  console.log(snapshot.val().items);
-  // refreshPosts(dataArray);
-}));
-
-function refreshPosts(dataArray) {
-  // Posts.remove({});
-  for (var index = 0, length = dataArray.length; index < length; index++) {
-    itemRef.child(dataArray[index]).once('value', Meteor.bindEnvironment(function (snapshot) {
-      // Posts.insert(snapshot.val());
-      var now = new Date().getTime() / 1000;
-      var createdTime = snapshot.val().time;
-      var ageInHours = (now - createdTime) / 3600;
-      var algorithm = (snapshot.val().score - 1) / Math.pow(ageInHours + 2, 1.5);
-      var story = _.extend(snapshot.val(), {
-        rank: algorithm
-      });
-      Stories.upsert({id: snapshot.val().id}, story);
-    }));
-  }
-}
-// itemRef.child('8863').once('value', function (snapshot) {
-//   console.log(snapshot.val());
-// });
+// function refreshPosts(dataArray) {
+//   // Posts.remove({});
+//   for (var index = 0, length = dataArray.length; index < length; index++) {
+//     itemRef.child(dataArray[index]).once('value', Meteor.bindEnvironment(function (snapshot) {
+//       // Posts.insert(snapshot.val());
+//       var now = new Date().getTime() / 1000;
+//       var createdTime = snapshot.val().time;
+//       var ageInHours = (now - createdTime) / 3600;
+//       var algorithm = (snapshot.val().score - 1) / Math.pow(ageInHours + 2, 1.5);
+//       var story = _.extend(snapshot.val(), {
+//         rank: algorithm
+//       });
+//       Stories.upsert({id: snapshot.val().id}, story);
+//     }));
+//   }
+// }
