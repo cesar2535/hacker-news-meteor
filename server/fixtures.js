@@ -57,7 +57,7 @@ topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
   } else {
     /* Keep refreshing data from Firebase server */
     topStoriesId = TopStories.findOne()._id;
-    console.log(topStoriesId);
+    // console.log(topStoriesId);
     TopStories.update(topStoriesId, {$set: {data: snapshot.val()}}, function (error) {
       if (error)
         console.log(error);
@@ -68,8 +68,8 @@ topStoriesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
 
 updatesRef.on('value', Meteor.bindEnvironment(function (snapshot) {
   var dataArray = snapshot.val().items;
-  console.log(snapshot.val().items);
-  // refreshPosts(dataArray);
+  // console.log(snapshot.val().items);
+  refreshPosts(dataArray);
 }));
 
 function refreshPosts(dataArray) {
