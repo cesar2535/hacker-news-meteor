@@ -7,7 +7,6 @@ meteor-platform
 mquandalle:jade
 iron:router
 mizzao:bootstrap-3
-fourseven:scss
 francocatena:compass
 sacha:spin
 meteorhacks:npm
