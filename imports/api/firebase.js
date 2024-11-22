@@ -36,9 +36,10 @@ import Firebase from "firebase";
 */
 
 const firebaseRef = new Firebase("https://hacker-news.firebaseio.com/v0");
-const topStoriesRef = firebaseRef.child("topstories");
-const itemRef = firebaseRef.child("item");
-const updatesRef = firebaseRef.child("updates");
+
+export const topStoriesRef = firebaseRef.child("topstories");
+export const itemRef = firebaseRef.child("item");
+export const updatesRef = firebaseRef.child("updates");
 
 // var topStoriesId;
 

@@ -1,4 +1,5 @@
-import { Meteor } from 'meteor/meteor'
+import { Meteor } from "meteor/meteor";
+import { itemRef, topStoriesRef } from "./firebase";
 
 Meteor.publish("posts", function (options) {
   var self = this;
