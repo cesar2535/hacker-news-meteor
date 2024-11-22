@@ -1,3 +1,5 @@
+import Firebase from "firebase";
+
 /*  Hacker News API with Firebase
   Github: https://github.com/HackerNews/API
 
@@ -33,12 +35,10 @@
   };
 */
 
-Firebase = Meteor.npmRequire('firebase');
-
-ref = new Firebase('https://hacker-news.firebaseio.com/v0');
-topStoriesRef = ref.child('topstories');
-itemRef = ref.child('item');
-updatesRef = ref.child('updates');
+const firebaseRef = new Firebase("https://hacker-news.firebaseio.com/v0");
+const topStoriesRef = firebaseRef.child("topstories");
+const itemRef = firebaseRef.child("item");
+const updatesRef = firebaseRef.child("updates");
 
 // var topStoriesId;
 
